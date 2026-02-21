@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Password Strength Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- Parallax Background Shapes -->
+    <div class="bg-shapes">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="container">
+        <h1>🔐 Password Strength Analyzer</h1>
+
+        <form method="POST">
+            <input type="password" name="password" id="password"
+                placeholder="Enter your password" required>
+            <button type="submit">Check Strength</button>
+        </form>
+
+        {% if result %}
+        <div class="result-box">
+            <h2>{{ result }}</h2>
+            <div class="strength-bar">
+                <div class="strength-fill"></div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="watermark">
+        Made by - Mohamed Younus
+    </div>
+
+</body>
+</html>
