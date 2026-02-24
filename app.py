@@ -1,50 +1,26 @@
-from flask import Flask, render_template, request
+import streamlit as st
 import pickle
 import os
 
-app = Flask(__name__)
-
-# ----------------------------
-# Load Model Safely (Production Safe Path)
-# ----------------------------
+# Load model
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+model = pickle.load(open(os.path.join(BASE_DIR, "model.pkl"), "rb"))
+vectorizer = pickle.load(open(os.path.join(BASE_DIR, "vectorizer.pkl"), "rb"))
 
-model_path = os.path.join(BASE_DIR, "model.pkl")
-vectorizer_path = os.path.join(BASE_DIR, "vectorizer.pkl")
+st.set_page_config(page_title="Password Strength Analyzer", page_icon="🔐")
 
-model = pickle.load(open(model_path, "rb"))
-vectorizer = pickle.load(open(vectorizer_path, "rb"))
+st.title("🔐 Password Strength Analyzer")
+st.markdown("### Made by - Mohamed Younus")
 
-# ----------------------------
-# Prediction Function
-# ----------------------------
-def predict_strength(password):
+password = st.text_input("Enter your password", type="password")
+
+if password:
     password_vector = vectorizer.transform([password])
     prediction = model.predict(password_vector)[0]
 
     if prediction == 0:
-        return "Weak 🔴"
+        st.error("Weak Password 🔴")
     elif prediction == 1:
-        return "Medium 🟡"
+        st.warning("Medium Password 🟡")
     else:
-        return "Strong 🟢"
-
-# ----------------------------
-# Routes
-# ----------------------------
-@app.route("/", methods=["GET", "POST"])
-def index():
-    result = ""
-    if request.method == "POST":
-        password = request.form["password"]
-        result = predict_strength(password)
-
-    return render_template("index.html", result=result)
-
-# ----------------------------
-# Production Server Config
-# ----------------------------
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
-    
+        st.success("Strong Password 🟢")
